@@ -13,6 +13,7 @@
     var BLOCKSIZE = 30; //Basic scale for all graphics
     var TRACK_THICKNESS = 0.5; //Relative thickness of the track to one block
     var STATION_RADIUS = 0.45; //Relative radius of the station
+    var SMALL_STATION_RADIUS = 0.25; //Relative radius of not important the station
     var CONNECTOR_RATIO = 0.55; //Relative thickness of connector, to station
     var STATION_LINE_THICKNESS = 0.1; //Absolute thickness of station boundary
     var LABEL_FONT_SIZE = 14; //Font size for station labels
@@ -122,9 +123,11 @@
         return this.pt + " " + Coordinate.prototype.toString.call(this);
     };
 
-    function Track(color, startingPt) {
+    function Track(color, startingPt, isDash, isArrow) {
         this.color = color;
         this.segments = new Array(sqrToPixel(startingPt));
+        this.isDash = isDash;
+        this.isArrow = isArrow;
     }
 
     Track.prototype.addSegment = function(dest, dir) {
@@ -145,7 +148,12 @@
     };
 
     Track.prototype.paint = function(paper) {
-        this.arrowHead(paper);
+
+        if (typeof this.isArrow !== "undefined" && this.isArrow == true)
+        {
+            this.arrowHead(paper);
+        }
+        
         var svg = "M" + this.segments[0] + " "; //First point is never a "curve"
         for (var i = 1; i < this.segments.length; i++) {
             //Use SVG quadratic Bézier curveto to draw curves
@@ -158,7 +166,10 @@
             }
         }
 
+        var isDash = (typeof this.isDash !== "undefined" && this.isDash == true);
+        var dashstyle = (isDash) ? "-" : "";
         paper.path(svg).attr({
+            "stroke-dasharray": dashstyle,
             "stroke": this.color,
             "stroke-width": TRACK_THICKNESS * BLOCKSIZE,
             "stroke-linejoin": "round"
@@ -166,7 +177,8 @@
     };
 
     Track.prototype.arrowHead = function(paper) {
-        if (this.segments.length > 1) {
+        var len = this.segments.length;
+        if (len > 1) {
             var elem = this.segments.pop();
             var trans;
             if (elem instanceof Curve) {
@@ -187,7 +199,7 @@
         }
     };
 
-    function Station(ID, name, href, labelDir, labelTer, links) {
+    function Station(ID, name, href, labelDir, labelTer, links, displayType, symbol, color, popupId) {
         this.name = name;
         this.href = href;
         this.labelDir = labelDir;
@@ -197,7 +209,10 @@
         this.ID = ID;
         //Terminals, Main glow, Link glow
         this.elements = [[], [], []];
-
+        this.displayType = displayType; 
+        this.symbol = symbol;
+        this.color = color;
+        this.popupId = popupId;
     }
 
     Station.prototype.addTerminal = function(trans) {
@@ -213,61 +228,88 @@
     };
 
     Station.prototype.paint = function(paper) {
-        //Outer layer
-        var prevPt = 0;
-        var elem;
-        for (var i = 0; i < this.terminals.length; i++) {
-            //Creates a station marker, size depeding on the layer it is at
-            elem = paper.circle(this.terminals[i].x, this.terminals[i].y, STATION_RADIUS * BLOCKSIZE).attr("fill", station_colors[0]);
-            this.elements[0].push(elem);
-            this.elements[1].push(elem.glow({
-                width: BLOCKSIZE / 2,
-                color: glow_colors[0]
-            }));
-            this.elements[2].push(elem.glow({
-                width: BLOCKSIZE / 2,
-                color: glow_colors[1]
-            }));
-            //Links previous terminal to this one
-            if (prevPt !== 0) {
-                elem = paper.path("M" + prevPt + " L" + this.terminals[i]).attr({
-                    "stroke": station_colors[0],
-                    "stroke-width": BLOCKSIZE * CONNECTOR_THICKNESS
-                });
+        var TypeEnum = {
+            BIG : 1,
+            SMALL : 2,
+            NONE : 3
+        }
+
+        var displayType = 0;
+        if (typeof this.displayType === "undefined") {
+            displayType = TypeEnum.BIG;
+        } else if (this.displayType == "small") {
+            displayType = TypeEnum.SMALL;
+        } else if (this.displayType == "none") {
+            displayType = TypeEnum.NONE;
+        } else {
+            displayType = TypeEnum.BIG;
+        }
+        
+        if (displayType == TypeEnum.BIG) 
+        {
+            //Outer layer
+            var prevPt = 0;
+            var elem;
+            for (var i = 0; i < this.terminals.length; ++i) {
+                //Creates a station marker, size depeding on the layer it is at
+                elem = paper.circle(this.terminals[i].x, this.terminals[i].y, STATION_RADIUS * BLOCKSIZE).attr("fill", station_colors[0]);
                 this.elements[0].push(elem);
                 this.elements[1].push(elem.glow({
-                    width: BLOCKSIZE * (CONNECTOR_THICKNESS / 2 * 1.8),
-                    opacity: 0.8,
+                    width: BLOCKSIZE / 2,
                     color: glow_colors[0]
                 }));
                 this.elements[2].push(elem.glow({
-                    width: BLOCKSIZE * (CONNECTOR_THICKNESS / 2 * 1.8),
-                    opacity: 0.8,
+                    width: BLOCKSIZE / 2,
                     color: glow_colors[1]
                 }));
+                //Links previous terminal to this one
+                if (prevPt !== 0) {
+                    elem = paper.path("M" + prevPt + " L" + this.terminals[i]).attr({
+                        "stroke": station_colors[0],
+                        "stroke-width": BLOCKSIZE * CONNECTOR_THICKNESS
+                    });
+                    this.elements[0].push(elem);
+                    this.elements[1].push(elem.glow({
+                        width: BLOCKSIZE * (CONNECTOR_THICKNESS / 2 * 1.8),
+                        opacity: 0.8,
+                        color: glow_colors[0]
+                    }));
+                    this.elements[2].push(elem.glow({
+                        width: BLOCKSIZE * (CONNECTOR_THICKNESS / 2 * 1.8),
+                        opacity: 0.8,
+                        color: glow_colors[1]
+                    }));
+                }
+                prevPt = this.terminals[i];
             }
-            prevPt = this.terminals[i];
         }
 
-        //Inner layer
-        prevPt = 0;
-        for (i = 0; i < this.terminals.length; i++) {
-            elem = paper.circle(this.terminals[i].x, this.terminals[i].y, BLOCKSIZE * INNER_RADIUS).attr("fill", station_colors[1]);
-            this.elements[0].push(elem);
-            if (prevPt !== 0) {
-                elem = paper.path("M" + prevPt + " L" + this.terminals[i]).attr({
-                    "stroke": station_colors[1],
-                    "stroke-width": BLOCKSIZE * INNER_CONECTOR
-                });
+        if (displayType != TypeEnum.NONE) 
+        {
+            //Inner layer
+            prevPt = 0;
+            for (i = 0; i < this.terminals.length; i++) 
+            {
+                var innerSize = (displayType == TypeEnum.BIG) ? INNER_RADIUS : 0.25;
+                var innerColor = (typeof this.color !== "undefined") ? this.color : station_colors[1];
+                elem = paper.circle(this.terminals[i].x, this.terminals[i].y, BLOCKSIZE * innerSize).attr("fill", innerColor);
                 this.elements[0].push(elem);
+                if (prevPt !== 0) {
+                    elem = paper.path("M" + prevPt + " L" + this.terminals[i]).attr({
+                        "stroke": station_colors[1],
+                        "stroke-width": BLOCKSIZE * INNER_CONECTOR
+                    });
+                    this.elements[0].push(elem);
+                }
+                prevPt = this.terminals[i];
             }
-            prevPt = this.terminals[i];
         }
 
-        //Print Station number
+        var symbol = (typeof this.symbol !== "undefined") ? this.symbol : "";
+        var symbolSize = (symbol.length > 1) ? 1.5 : 1.8;
         for (i = 0; i < this.terminals.length; i++) {
-            this.elements[0].push(paper.text(this.terminals[i].x, this.terminals[i].y, this.ID + 1).attr({
-                "font-size": INNER_RADIUS * BLOCKSIZE * 1.8,
+            this.elements[0].push(paper.text(this.terminals[i].x, this.terminals[i].y, symbol).attr({
+                "font-size": INNER_RADIUS * BLOCKSIZE * symbolSize,
                 "font-weight": "bolder"
             }));
         }
@@ -284,6 +326,9 @@
         this.elements[1].hide();
         this.elements[2].hide();
 
+        var isPopup = (typeof this.popupId !== "undefined");
+        var popupId = this.popupId;
+
         //Local references
         var mainElem = this.elements[1];
         var links = this.links;
@@ -291,7 +336,11 @@
         //Add mouselistener for glow
         this.elements[0].mouseover(function() {
             mainElem.show();
-            label.attr("font-weight", "bolder");
+            
+            if (displayType == TypeEnum.BIG) {
+                label.attr("font-weight", "bolder");
+            }
+            
             for (var i in links) {
                 if (typeof links[i] !== "undefined") {
                     links[i].linkGlow();
@@ -306,7 +355,12 @@
                     links[i].linkUnGlow();
                 }
             }
+        }).click(function() {
+            if (isPopup) {
+                $('#'+popupId).fadeIn('slow');
+            }
         });
+
         //Add the link
         this.elements[0].attr("href", this.href);
     };
@@ -370,6 +424,7 @@
         }
         var returnVal = paper.text(x, y, this.name).attr({
             "text-anchor": alignment,
+            "font-family": "sans-serif",
             "font-size": LABEL_FONT_SIZE
         });
         return returnVal;
@@ -499,7 +554,10 @@
                     //Build a new track
                     var startingCoord = $(Element).data("start-point").split(",");
                     var newCoord = new Coordinate(parseInt(startingCoord[0], 10), parseInt(startingCoord[1], 10));
-                    var t = new Track($(Element).data("color"), newCoord);
+                    
+                    var isDash = $(Element).data("dash");
+                    var isArrow = $(Element).data("arrow");
+                    var t = new Track($(Element).data("color"), newCoord, isDash, isArrow);
                     obj.maxCoord(newCoord);
                     //Process each segment
                     $(Element).children().each(
@@ -518,9 +576,14 @@
                 function(index, Element) {
                     var name = $(Element).text().replace(/\\n/g, "\n");
                     var href = $(Element).children("a").first().attr("href");
+                    var popupId = $(Element).data("popup-id");
                     var labelDir = $(Element).data("label-dir");
                     var labelTer = $(Element).data("label-ter");
                     var links = $(Element).data("link");
+
+                    var displayType = $(Element).data("display-type");
+                    var symbol = $(Element).data("symbol");
+                    var color = $(Element).data("color");
 
                     var i;
 
@@ -532,7 +595,7 @@
                         }
                     }
                     //Create the station
-                    var s = new Station(obj.stations.length, name, href, labelDir, labelTer, links);
+                    var s = new Station(obj.stations.length, name, href, labelDir, labelTer, links, displayType, symbol, color, popupId);
                     //Add each terminal(start from 1 to prevent overflow)
                     var terminals = $(Element).data("pos").split(/[,;]/);
                     for (i = 1; i <= terminals.length; i += 2) {
