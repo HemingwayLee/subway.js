@@ -199,7 +199,7 @@
         }
     };
 
-    function Station(ID, name, href, labelDir, labelTer, links, displayType, symbol, color, popupId) {
+    function Station(ID, name, href, labelDir, labelTer, links, displayType, symbol, color, popupId, textVertical) {
         this.name = name;
         this.href = href;
         this.labelDir = labelDir;
@@ -213,6 +213,7 @@
         this.symbol = symbol;
         this.color = color;
         this.popupId = popupId;
+        this.textVertical = textVertical;
     }
 
     Station.prototype.addTerminal = function(trans) {
@@ -422,10 +423,20 @@
                 alignment = "start";
                 break;
         }
+        
+        if (typeof this.textVertical !== "undefined" && this.textVertical == true) {
+            var verticalName = "";
+            for (var i = 0; i < this.name.length; ++i) {
+                verticalName += this.name[i];
+                verticalName += '\n';
+            }
+            this.name = verticalName;
+        }
+        
         var returnVal = paper.text(x, y, this.name).attr({
             "text-anchor": alignment,
             "font-family": "sans-serif",
-            "font-size": LABEL_FONT_SIZE
+            "font-size": LABEL_FONT_SIZE //[NOTE] font size can be changed in the future...
         });
         return returnVal;
     };
@@ -584,6 +595,7 @@
                     var displayType = $(Element).data("display-type");
                     var symbol = $(Element).data("symbol");
                     var color = $(Element).data("color");
+                    var textVertical = $(Element).data("text-vertical");
 
                     var i;
 
@@ -595,7 +607,7 @@
                         }
                     }
                     //Create the station
-                    var s = new Station(obj.stations.length, name, href, labelDir, labelTer, links, displayType, symbol, color, popupId);
+                    var s = new Station(obj.stations.length, name, href, labelDir, labelTer, links, displayType, symbol, color, popupId, textVertical);
                     //Add each terminal(start from 1 to prevent overflow)
                     var terminals = $(Element).data("pos").split(/[,;]/);
                     for (i = 1; i <= terminals.length; i += 2) {
