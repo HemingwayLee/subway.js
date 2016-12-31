@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Subway Map Demo</title>
+        <script src="../resources/jquery-1.9.1.min.js"></script>
+        <script src="../resources/raphael.min.js"></script>
+        <script src="../resources/scale.raphael.js"></script>
+        <script src="../resources/jquery.ba-throttle-debounce.min.js"></script>
+        <script src="../subway.js"></script>
+    </head>
+    <body>
+        <div id="subway" data-debug="true">
+            <!--default track-->
+            <ul class="subway-tracks" data-color="#ff0000" data-start-point="2,2">
+                <li data-dest="5,2"></li>
+                <li data-dest="6,3"></li>
+                <li data-dest="6,6"></li>
+            </ul>
+        
+            <!--track with turn-->
+            <ul class="subway-tracks" data-color="#00ffff" data-start-point="12,2">
+                <li data-dest="15,2"></li>
+                <li data-dest="16,3" data-turn="S"></li>
+                <li data-dest="16,6"></li>
+            </ul>
+            
+            <!--track with dash line-->
+            <ul class="subway-tracks" data-color="#E286F4" data-start-point="4,12" data-dash="true">
+                <li data-dest="12,9"></li>
+                <li data-dest="18,12"></li>
+                <li data-dest="20,14"></li>
+            </ul>
+        </div>
+        <div style ="width:75%; margin-left:auto; margin-right:auto; height:100%">
+            <div id="subway-display"></div>
+        </div>
+        <script>
+            window.onload = function(){
+                new OLSubway().create('subway-display','subway');
+            };
+        </script>
+</html>

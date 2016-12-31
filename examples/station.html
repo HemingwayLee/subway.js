@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Subway Map Demo</title>
+        <script src="../resources/jquery-1.9.1.min.js"></script>
+        <script src="../resources/raphael.min.js"></script>
+        <script src="../resources/scale.raphael.js"></script>
+        <script src="../resources/jquery.ba-throttle-debounce.min.js"></script>
+        <script src="../subway.js"></script>
+    </head>
+    <body>
+        <div id="subway" data-debug="true"> <!--we can remove grid by removing data-debug="true" attribute-->
+            <ul ID="subway-stations">
+                <!--default station-->
+                <li data-pos="1,1"></li>
+                
+                <!--change station color-->
+                <li data-pos="2,3" data-color="red"></li>
+                
+                <!--default station with name-->
+                <li data-pos="9,1">name</li>
+                
+                <!--add symbol and color-->
+                <li data-pos="5,1" data-symbol="H2" data-color="#00AAAA"></li>
+                
+                <!--change station display type to small and add symbol-->
+                <li data-pos="4,4" data-display-type="small" data-symbol="S">江ノ島</li>
+                
+                <!--change display type to hide station-->
+                <li data-pos="1,6" data-display-type="none">東京方向</li>
+                
+                <!--change label direction and add symbol-->
+                <li data-pos="5,3" data-symbol="A" data-label-dir="E">湘南モノレール</li>
+                
+                <!--two positions station and hyperlink-->
+                <li data-pos="8,5; 9,7" data-label-dir="WN"><a href="https://www.google.com.tw">Google</a></li>
+            </ul>
+        </div>
+        <div style ="width:75%; margin-left:auto; margin-right:auto; height:100%">
+            <div id="subway-display"></div>
+        </div>
+        <script>
+            window.onload = function(){
+                new OLSubway().create('subway-display','subway');
+            };
+        </script>
+</html>

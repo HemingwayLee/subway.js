@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Subway Region Demo</title>
+        <script src="../resources/jquery-1.9.1.min.js"></script>
+        <script src="../resources/raphael.min.js"></script>
+        <script src="../resources/scale.raphael.js"></script>
+        <script src="../resources/jquery.ba-throttle-debounce.min.js"></script>
+        <script src="../subway.js"></script>
+    </head>
+    <body>
+        <div id="subway" data-debug="true">
+            <ul class="subway-islands" data-island-name="Area 1" data-background-color="#ff0000" data-font-size="50px" data-font-color="#fff" data-sharp="true">
+                <li data-edge="1,1"></li>
+                <li data-edge="18.5,1"></li>
+                <li data-edge="18.5,20"></li>
+                <li data-edge="10,25"></li>
+                <li data-edge="1,20"></li>
+            </ul>
+            <ul class="subway-islands" data-island-name="Area 2" data-background-color="#0000ff" data-font-size="30px" data-font-color="#ddd">
+                <li data-edge="30,1"></li>
+                <li data-edge="35,6"></li>
+                <li data-edge="30,11"></li>
+                <li data-edge="25,6"></li>
+            </ul>
+        </div>
+        <div style ="width:75%; margin-left:auto; margin-right:auto; height:100%">
+            <div id="subway-display"></div>
+        </div>
+        <script>
+            window.onload = function(){
+                new OLSubway().create('subway-display','subway');
+            };
+        </script>
+</html>
