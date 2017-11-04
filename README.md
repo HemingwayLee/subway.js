@@ -2,6 +2,9 @@
 
 A javascript app to display an interactive subway map. Javascript reads from HTML and uses Raphael to render a map.
 
+## Example
+![alt text](https://user-images.githubusercontent.com/8428372/32406057-fba351ae-c1ab-11e7-811d-4bb15b887881.png)
+
 ## Introduction
 This app allows a user to render a subway map from HTML lists.
 Features include:
@@ -24,7 +27,7 @@ Include the Javascript libraries before closing your `<body>` tag. They are prov
 ```html
 <script src="./resources/jquery.min.js"></script>
 <script src="./resources/raphael.min.js"></script>
-<script src="./subway.min.js"></script>
+<script src="./subway.js"></script>
 ```
 
 Create a display `<div>` tag with an ID. The map will be rendered within this tag.
@@ -32,7 +35,7 @@ Create a display `<div>` tag with an ID. The map will be rendered within this ta
 <div id="subway-display"></div>
 ```
 
-Optionally create another `<div>` tag to contain the data for the map. If you choose not to create a separate tag, data will be read from the display tag. `data-debug="true"` can be included to display a grid for referencing. The width and height of the canvas will be determined automatically from the elements created.
+`data-debug="true"` can be included to display a grid for referencing. The width and height of the canvas will be determined automatically from the elements created.
 ```html
 <div id="subway" data-debug="true"></div>
 ```
