@@ -149,7 +149,7 @@
 
     Track.prototype.paint = function(paper) {
 
-        if (typeof this.isArrow !== "undefined" && this.isArrow == true)
+        if (typeof this.isArrow !== "undefined")
         {
             this.arrowHead(paper);
         }
@@ -178,24 +178,53 @@
 
     Track.prototype.arrowHead = function(paper) {
         var len = this.segments.length;
-        if (len > 1) {
-            var elem = this.segments.pop();
-            var trans;
-            if (elem instanceof Curve) {
-                trans = coordTrans(elem, elem.pt);
-                elem = new Curve(trans[0], elem.pt);
-            }
-            else {
-                trans = coordTrans(elem, this.segments[this.segments.length - 1]);
-                elem = new Coordinate(trans[0].x, trans[0].y);
-            }
+        
+        //draw last arrow
+        if (this.isArrow == "last" || this.isArrow == "both")
+        {
+            if (len > 1) {
+                var elem = this.segments.pop();
+                var trans;
+                if (elem instanceof Curve) {
+                    trans = coordTrans(elem, elem.pt);
+                    elem = new Curve(trans[0], elem.pt);
+                }
+                else {
+                    trans = coordTrans(elem, this.segments[this.segments.length - 1]);
+                    elem = new Coordinate(trans[0].x, trans[0].y);
+                }
 
-            this.segments.push(elem);
+                this.segments.push(elem);
+                
+                paper.path(ARROW).attr({
+                    fill: this.color,
+                    stroke: this.color
+                }).transform("T" + elem.x + "," + elem.y + "S" + BLOCKSIZE * ARROW_SCALE + "," + BLOCKSIZE * ARROW_SCALE + "," + elem.x + "," + elem.y + "R" + trans[1] + "," + elem.x + "," + elem.y);
+            }
+        }
+        
+        //draw first arrow
+        if (this.isArrow == "first" || this.isArrow == "both")
+        {
+            if (len > 1) {
+                var elem = this.segments.shift();
+                var trans;
+                if (elem instanceof Curve) {
+                    trans = coordTrans(elem, elem.pt);
+                    elem = new Curve(trans[0], elem.pt);
+                }
+                else {
+                    trans = coordTrans(elem, this.segments[0]);
+                    elem = new Coordinate(trans[0].x, trans[0].y);
+                }
 
-            paper.path(ARROW).attr({
-                fill: this.color,
-                stroke: this.color
-            }).transform("T" + elem.x + "," + elem.y + "S" + BLOCKSIZE * ARROW_SCALE + "," + BLOCKSIZE * ARROW_SCALE + "," + elem.x + "," + elem.y + "R" + trans[1] + "," + elem.x + "," + elem.y);
+                this.segments.unshift(elem);
+                
+                paper.path(ARROW).attr({
+                    fill: this.color,
+                    stroke: this.color
+                }).transform("T" + elem.x + "," + elem.y + "S" + BLOCKSIZE * ARROW_SCALE + "," + BLOCKSIZE * ARROW_SCALE + "," + elem.x + "," + elem.y + "R" + trans[1] + "," + elem.x + "," + elem.y);
+            }
         }
     };
 
