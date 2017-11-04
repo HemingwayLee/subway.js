@@ -12,35 +12,35 @@
     <body>
         <div id="subway" data-debug="true"> <!--we can remove grid by removing data-debug="true" attribute-->
             <ul ID="subway-stations">
-                <!--default station-->
+                <!--station-->
                 <li data-pos="1,1"></li>
                 
-                <!--change station color-->
-                <li data-pos="2,3" data-color="red"></li>
+                <!--station with color-->
+                <li data-pos="1,3" data-color="red"></li>
                 
-                <!--default station with name-->
-                <li data-pos="9,1">name</li>
+                <!--station with name-->
+                <li data-pos="1,5">博多</li>
                 
-                <!--add symbol and color-->
-                <li data-pos="5,1" data-symbol="H2" data-color="#00AAAA"></li>
+                <!--staion with symbol and color-->
+                <li data-pos="1,8" data-symbol="H2" data-color="#00AAAA"></li>
                 
-                <!--change station display type to small and add symbol-->
-                <li data-pos="4,4" data-display-type="small" data-symbol="S">江ノ島</li>
+                <!--change station display type to small-->
+                <li data-pos="1,10" data-symbol="B" data-display-type="small">江ノ島</li>
                 
-                <!--change display type to hide station-->
-                <li data-pos="1,6" data-display-type="none">東京方向</li>
+                <!--change station display type to none to hide station data point-->
+                <li data-pos="1,12" data-display-type="none">東京方向</li>
                 
-                <!--change label direction and add symbol-->
-                <li data-pos="5,3" data-symbol="A" data-label-dir="E">湘南モノレール</li>
-                
-                <!--two positions station and hyperlink-->
-                <li data-pos="8,5; 9,7" data-label-dir="EN"><a href="https://www.google.com.tw">Google</a></li>
-            
-                <!--change station display type to small and add symbol-->
-                <li data-pos="4,4" data-display-type="small" data-symbol="S">江ノ島</li>
+                <!--change station label direction-->
+                <li data-pos="1,15" data-symbol="A" data-label-dir="E">湘南モノレール</li>
                 
                 <!--change text display to vertical-->
-                <li data-pos="5,6" data-label-dir="E" data-text-vertical="true">福岡天神站</li>
+                <li data-pos="1,17" data-label-dir="E" data-text-vertical="true">天神</li>
+                
+                <!--station with hyperlinlk-->
+                <li data-pos="1,19" data-label-dir="E"><a href="https://www.google.com.tw">大濠公園</a></li>
+                
+                <!--two positions station-->
+                <li data-pos="5,1; 6,3" data-label-dir="EN"></li>
             </ul>
         </div>
         <div style ="width:75%; margin-left:auto; margin-right:auto; height:100%">
