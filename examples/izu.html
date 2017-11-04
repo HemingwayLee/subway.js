@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+        <title>Subway Map Demo</title>
+        <script src="../resources/jquery-1.9.1.min.js"></script>
+        <script src="../resources/raphael.min.js"></script>
+        <script src="../resources/scale.raphael.js"></script>
+        <script src="../resources/jquery.ba-throttle-debounce.min.js"></script>
+        <script src="../subway.js"></script>
+    </head>
+    <body>
+        <div id="subway" data-debug="true">
+            <ul class="subway-islands" data-island-name="Izu peninsula" data-background-color="#ddd" data-font-size="50px" data-font-color="#fff" data-sharp="true">
+                <li data-edge="0,0"></li>
+                <li data-edge="33,0"></li>
+                <li data-edge="25,8"></li>
+                <li data-edge="25,12"></li>
+                <li data-edge="24,13"></li>
+                <li data-edge="24,14"></li>
+                <li data-edge="27,17"></li>
+                <li data-edge="27,30"></li>
+                <li data-edge="26,31"></li>
+                <li data-edge="26,32"></li>
+                <li data-edge="25,33"></li>
+                <li data-edge="24,33"></li>
+                <li data-edge="19,38"></li>
+                <li data-edge="12,38"></li>
+                <li data-edge="7,33"></li>
+                <li data-edge="7,31"></li>
+                <li data-edge="5,29"></li>
+                <li data-edge="5,27"></li>
+                <li data-edge="4,26"></li>
+                <li data-edge="4,19"></li>
+                <li data-edge="3,18"></li>
+                <li data-edge="3,15"></li>
+                <li data-edge="8,15"></li>
+                <li data-edge="9,14"></li>
+                <li data-edge="9,12"></li>
+                <li data-edge="6,9"></li>
+                <li data-edge="0,9"></li>
+            </ul>
+            
+            <!--Tokai line-->
+            <ul class="subway-tracks" data-color="#F68B1E" data-start-point="30,0" data-dash="false" data-arrow="both">
+                <li data-dest="24,6"></li>
+                <li data-dest="10,6"></li>
+                <li data-dest="8,8"></li>
+                <li data-dest="0,8"></li>
+            </ul>
+            
+            <!--Shinkansen-->
+            <ul class="subway-tracks" data-color="gray" data-start-point="28,0" data-dash="true" data-arrow="both">
+                <li data-dest="23,5"></li>
+                <li data-dest="9,5"></li>
+                <li data-dest="0,5"></li>
+            </ul>
+            
+            <!--Gotemba-->
+            <ul class="subway-tracks" data-color="#F77321" data-start-point="8,8" data-dash="false" data-arrow="last">
+                <li data-dest="8,0"></li>
+            </ul>
+            
+            
+            <ul class="subway-tracks" data-color="#009900" data-start-point="24,6">
+                <li data-dest="22,8"></li>
+                <li data-dest="22,12"></li>
+                <li data-dest="23,13"></li>
+            </ul>
+            <ul class="subway-tracks" data-color="#0033FF" data-start-point="23,13">
+                <li data-dest="23,15"></li>
+                <li data-dest="25,17"></li>
+                <li data-dest="26,18"></li>
+                <li data-dest="26,28"></li>
+                <li data-dest="23,31"></li>
+                <li data-dest="23,33"></li>
+            </ul>
+            <ul class="subway-tracks" data-color="#127BBF" data-start-point="13,6">
+                <li data-dest="13,8"></li>
+                <li data-dest="15,10"></li>
+                <li data-dest="15,18"></li>
+                <li data-dest="16,19"></li>
+                <li data-dest="16,21"></li>
+            </ul>
+            <ul ID="subway-stations">
+                <li data-pos="26,4" data-label-dir="E" data-display-type="small">湯河原</li>
+                <li data-pos="24,6; 23,5" data-label-dir="ES">熱海</li>
+                <li data-pos="17,6" data-label-dir="S" data-display-type="small">函南</li>
+                <li data-pos="13,5; 13,6" data-label-dir="N">三島</li>
+                <li data-pos="8,8">沼津</li>
+                <li data-pos="6,8" data-display-type="small">片浜</li>
+                <li data-pos="8,6" data-label-dir="W" data-display-type="small">大岡</li>
+                <li data-pos="8,3" data-label-dir="W" data-display-type="small">下土狩</li>
+                <li data-pos="13,8" data-label-dir="W" data-display-type="small">三島廣小路</li>
+                <li data-pos="14,9" data-label-dir="W" data-display-type="small">三島田町</li>
+                <li data-pos="15,10" data-label-dir="W" data-display-type="small">三島二日町</li>
+                <li data-pos="15,11" data-label-dir="W" data-display-type="small">大場</li>
+                <li data-pos="15,12" data-label-dir="W" data-display-type="small">伊豆仁田</li>
+                <li data-pos="15,13" data-label-dir="W" data-display-type="small">原木</li>
+                <li data-pos="15,14" data-label-dir="W" data-display-type="small">韮山</li>
+                <li data-pos="15,15" data-label-dir="W" data-display-type="small">伊豆長岡</li>
+                <li data-pos="15,16" data-label-dir="W" data-display-type="small">田京</li>
+                <li data-pos="15,17" data-label-dir="W" data-display-type="small">大仁</li>
+                <li data-pos="16,19" data-label-dir="W" data-display-type="small">牧之鄉</li>
+                <li data-pos="16,21" data-label-dir="S">修善寺</li>
+                <li data-pos="22,8" data-label-dir="E">來宮</li>
+                <li data-pos="22,9" data-label-dir="E" data-display-type="small">伊豆多賀</li>
+                <li data-pos="22,10" data-label-dir="E" data-display-type="small">網代</li>
+                <li data-pos="22,11" data-label-dir="E" data-display-type="small">宇佐美</li>
+                <li data-pos="23,13" data-label-dir="E">伊東</li>
+                <li data-pos="23,15" data-label-dir="E">南伊東</li>
+                <li data-pos="25,17" data-label-dir="E" data-display-type="small">川奈</li>
+                <li data-pos="26,19" data-label-dir="E" data-display-type="small">富戶</li>
+                <li data-pos="26,20" data-label-dir="E" data-display-type="small">城崎海岸</li>
+                <li data-pos="26,22" data-label-dir="E">伊豆高原</li>
+                <li data-pos="26,24" data-label-dir="E" data-display-type="small">伊豆大川</li>
+                <li data-pos="26,25" data-label-dir="E" data-display-type="small">伊豆北川</li>
+                <li data-pos="26,26" data-label-dir="E" data-display-type="small">伊豆熱川</li>
+                <li data-pos="26,27" data-label-dir="E" data-display-type="small">片瀨白田</li>
+                <li data-pos="26,28" data-label-dir="E" data-display-type="small">伊豆稻取</li>
+                <li data-pos="25,29" data-label-dir="E" data-display-type="small">今井浜海岸</li>
+                <li data-pos="24,30" data-label-dir="W">河津</li>
+                <li data-pos="23,31" data-label-dir="W" data-display-type="small">稻梓</li>
+                <li data-pos="23,32" data-label-dir="W" data-display-type="small">蓮台寺</li>
+                <li data-pos="23,33" data-label-dir="W">伊豆急下田</li>
+                <li data-pos="4,20" data-label-dir="S" data-color="red">土肥港</li>
+                <li data-pos="5,28" data-label-dir="S" data-color="red">堂ヶ島</li>
+                <li data-pos="23,20" data-label-dir="S" data-color="red">大室山</li>
+                <li data-pos="24,18" data-label-dir="W" data-color="red">小室山</li>
+                <li data-pos="25,33" data-label-dir="E" data-color="red">爪木崎公園</li>
+                <li data-pos="18,35" data-label-dir="S" data-color="red">夜櫻流星</li>
+                <li data-pos="14,21" data-label-dir="S" data-color="red">修禅寺</li>
+                <li data-pos="2,6" data-label-dir="S" data-display-type="none">名古屋 靜岡 方向</li>
+                <li data-pos="28,1" data-label-dir="S" data-display-type="none">橫濱 東京 方向</li>
+                <li data-pos="8,0" data-label-dir="S" data-display-type="none">御殿場 方向</li>
+            </ul>
+        </div>
+        <div style ="width:75%; margin-left:auto; margin-right:auto; height:100%">
+            <div id="subway-display"></div>
+        </div>
+        <script>
+            window.onload = function(){
+                new OLSubway().create('subway-display','subway');
+            };
+        </script>
+</html>
